@@ -151,16 +151,21 @@ namespace modifies Network
 				//printf("requesting %d bytes\n", size);
 	            r = recv( Stream->file_descriptor, FE_STR2PTR(in), size, 0 );
 	            //printf("got %d bytes\n", r);
-	            Stream->eos = (r <= 0 ? FE_TRUE : FE_FALSE);
+	            Stream->eos = (r == 0 ? FE_TRUE : FE_FALSE);
 	            if( r == -1 )
 	            {
+					Stream->pending = FE_FALSE;
+					if (errno != EAGAIN || errno != EWOULDBLOCK) { // Support nonblocking I/O
+						Stream->eos = FE_TRUE;
 	                ferite_error( script, errno, "Network.TCP.Stream: Read: %s (%d)\n", strerror( errno ), errno );
 	                if( Stream->errmsg != NULL ) {
 	                    ffree( Stream->errmsg );
 	                }
 	                Stream->errmsg = fstrdup( strerror( errno ) );
+					}
 	                FE_STRLEN(in) = 0;
 	            } else {
+					Stream->pending = (r == 0 ? FE_FALSE : FE_TRUE);
 					FE_STRLEN(in) = r;
 					//printf("NETWORK:__READ__:%d[%d]:'%s'", FE_STRLEN(in), r, FE_STR2PTR(in));
 				}

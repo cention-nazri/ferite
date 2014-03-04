@@ -98,6 +98,7 @@ namespace Stream
            Stream->write = ferite_object_get_function( script, self, "__write__" );
            Stream->errmsg = NULL;
            Stream->eos = FE_FALSE;
+           Stream->pending = FE_TRUE;
            Stream->aggressive = FE_FALSE;
            self->odata = Stream;
        }
@@ -468,6 +469,38 @@ namespace Stream
        }
        
        /**
+        * @function nonblock
+        * @declaration function nonblock()
+        * @brief Set the stream in nonblocking mode
+        * @description This sets the stream to be non blocking
+        */
+       native function nonblock() : undefined
+       {
+	   	   int flags;
+           struct Stream *Stream = self->odata;
+
+		   flags = fcntl(Stream->file_descriptor, F_GETFL, 0);
+		   fcntl(Stream->file_descriptor, F_SETFL, flags | O_NONBLOCK);
+		   FE_RETURN_VOID;
+       }
+
+	   /**
+        * @function block
+        * @declaration function block()
+        * @brief Set the stream in blocking mode
+        * @description This sets the stream to be blocking
+        */
+       native function block() : undefined
+       {
+	   	   int flags;
+           struct Stream *Stream = self->odata;
+
+		   flags = fcntl(Stream->file_descriptor, F_GETFL, 0);
+		   fcntl(Stream->file_descriptor, F_SETFL, flags & (~O_NONBLOCK));
+		   FE_RETURN_VOID;
+       }
+
+       /**
         * @function __write__
         * @declaration function __write__( string s )
         * @brief Used for implementation of a Stream class
@@ -529,6 +562,22 @@ namespace Stream
            FE_RETURN_FALSE;
        }
         
+       /**
+        * @function empty
+        * @declaration function empty( )
+        * @brief Check to see if the stream has no data left to read
+        * @description The main difference between empty() and eos() is that for non-blocking streams eos signifies the end of stream (connection closed) while empty() merely signifies that there is currently no data to read.
+        * @return 'true' if it's empty, 'false' otherwise
+        */
+       native function empty( ) : boolean
+       {
+           struct Stream *Stream = self->odata;
+           if( Stream->pending == FE_FALSE )
+           {
+               FE_RETURN_TRUE;
+           }
+           FE_RETURN_FALSE;
+       }
         protected native function clearInputBuffer() : undefined {
             struct Stream *Stream = self->odata;
             stream_clear_input( Stream );
@@ -563,17 +612,21 @@ namespace Stream
             FeriteVariable *in = NULL;
             in = fe_new_str_static("read", NULL, (int)c, FE_CHARSET_DEFAULT );
             FE_STRLEN(in) = read( Stream->file_descriptor, FE_STR2PTR(in), (int)c );
-            Stream->eos = (FE_STRLEN(in) <= 0 ? FE_TRUE : FE_FALSE);
+            Stream->eos = (FE_STRLEN(in) == 0 ? FE_TRUE : FE_FALSE);
             if( FE_STRLEN(in) == -1 )
             {
+				Stream->pending = FE_FALSE;
+				if (errno != EAGAIN) {
                 ferite_error( script, errno, "StdioStream: Read: %s (%d)\n", strerror( errno ), errno );
                 if( Stream->errmsg != NULL )
                 {
                     ffree( Stream->errmsg );
                 }
                 Stream->errmsg = fstrdup( strerror( errno ) );
+                }
                 FE_STRLEN(in) = 0;
             }
+            Stream->pending = (FE_STRLEN(in) == 0 ? FE_FALSE : FE_TRUE);
             FE_RETURN_VAR( in );
         }
         native function __write__( string s ) : number {
