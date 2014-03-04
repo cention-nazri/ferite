@@ -641,8 +641,11 @@ INLINE_OP( ferite_exec_funcall )
 				}
 			}
 
-			if( vartwo && FE_VAR_IS_DISPOSABLE( vartwo ) ) /* the var was created */
-				ferite_variable_destroy( script, vartwo );
+			if( vartwo && FE_VAR_IS_DISPOSABLE( vartwo ) ) { /* the var was created */
+				if (vartwo->refcount > 0) { // Temporary fix for segfault
+					ferite_variable_destroy( script, vartwo );
+				}
+			}
 			break;
 		}
 		/*}}}*/
@@ -659,8 +662,11 @@ INLINE_OP( ferite_exec_funcall )
 				script->current_op_file = function->bytecode->filename; /* we do this because the other function might cause it to change */
 				script->current_op_line = current_op->line;
 			}
-			if( vartwo && FE_VAR_IS_DISPOSABLE( vartwo ) ) /* the var was created */
-				ferite_variable_destroy( script, vartwo );
+			if( vartwo && FE_VAR_IS_DISPOSABLE( vartwo ) ) { /* the var was created */
+				if (vartwo->refcount > 0) { // Temporary fix for segfault
+					ferite_variable_destroy( script, vartwo );
+				}
+			}
 			break;
 		}
 		/*}}}*/
