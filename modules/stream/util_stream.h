@@ -61,6 +61,7 @@ struct Stream
 	void *file_pointer;
 	int   file_descriptor;
 	int eos;
+	int pending;
 	int pos;
 	void *lock;
 };
