@@ -258,15 +258,15 @@ namespace Stream
            FeriteFunction *func;
            FeriteNamespaceBucket *nsb;
            FeriteVariable *str, *len, **args;
-           
+
            /* Call String.sprintf() to generate the formatted string: */
            if(!(nsb = ferite_find_namespace(script, script->mainns,
                                             "String.sprintf", FENS_FNC))) {
                FE_RETURN_LONG(-1);
            }
-           func = (FeriteFunction *)nsb->data;           
+           func = (FeriteFunction *)nsb->data;
            str = ferite_call_function(script, self, NULL, func, params );
-           
+
            /* Call self.write() to output the string: */
            func = ferite_object_get_function(script, self, "write");
            args = ferite_create_parameter_list(script,2);
@@ -332,7 +332,7 @@ namespace Stream
         * @description The line is read from the stream using the end of line string as a delimeter. The delimeter
         *              will be part of the string that is returned.
         * @return The data returned
-        */ 
+        */
        native function _readln( ) : string
        {
            FeriteVariable *v, *retval;
@@ -362,7 +362,7 @@ namespace Stream
                        Stream->input_buffer.length -= i + eoflen;
                        ferite_delete_parameter_list( script, args );
                        unlock_object;
-           
+
                        /* We have enough data within the buffer */
                        FE_RETURN_VAR( v );
                    }
@@ -399,13 +399,13 @@ namespace Stream
 			number eolLength = Stream.EndOfLine.length();
 			number dataLength = 0;
 			string new_block = '';
-		
+
 			do {
 				new_block = ._readln();
 				data += new_block;
 				dataLength = data.length();
 			} while( new_block and dataLength > eolLength and data[dataLength - eolLength..dataLength - 1] != Stream.EndOfLine );
-		
+
 			return data;
 		}
        /**
@@ -470,7 +470,7 @@ namespace Stream
            unlock_object;
            FE_RETURN_VAR( v );
        }
-       
+
        /**
         * @function nonblock
         * @declaration function nonblock()
@@ -564,7 +564,7 @@ namespace Stream
            }
            FE_RETURN_FALSE;
        }
-        
+
        /**
         * @function empty
         * @declaration function empty( )
@@ -600,16 +600,20 @@ namespace Stream
     {
         native function constructor( number fd ) {
             struct Stream *Stream = NULL;
-            FeriteVariable *c = ferite_create_object_variable_with_data( script, "StdioStream", self, FE_STATIC );           
-            ferite_variable_destroy( script, ferite_object_call_super( script, c, NULL ) );           
+            FeriteVariable *c = ferite_create_object_variable_with_data( script, "StdioStream", self, FE_STATIC );
+            ferite_variable_destroy( script, ferite_object_call_super( script, c, NULL ) );
             ferite_variable_destroy( script, c );
-            
+
             Stream = self->odata;
             Stream->eos = FE_FALSE;
             Stream->file_descriptor = fd;
             Stream->read = ferite_object_get_function( script, self, "__read__" );
             Stream->write = ferite_object_get_function( script, self, "__write__" );
         }
+
+        function toString()
+            return "<object(Stream.StdioStream) File Descriptor: ${.getDescriptor()} >";
+
         native function __read__( number c ) : string {
             struct Stream *Stream = self->odata;
             FeriteVariable *in = NULL;
@@ -662,6 +666,13 @@ namespace Stream
             }
             FE_RETURN_FALSE;
 		}
+
+		/**
+         * @function getDescriptor
+         * @declaration function getDescriptor()
+         * @brief Get a number representing the file descriptor attached to the stream
+         * @return The unique number (integer) for the stream
+         */
 		native function getDescriptor() : number {
 			struct Stream *s = self->odata;
 			FE_RETURN_LONG(s->file_descriptor);
@@ -705,35 +716,35 @@ namespace Stream
             .pos = 0;
             super();
         }
-        
+
         function __read__(number cnt)
         {
             string ret;
             number newpos;
-            
+
             if(cnt <= 0) {
                 return "";
             }
-            
+
             newpos = .pos + cnt;
             if(newpos > String.length(.s)) {
                 newpos = String.length(.s);
             }
-            
+
             if(.pos == newpos) {
                 return "";
             }
-            
+
             ret = .s[.pos .. newpos - 1];
             .pos = newpos;
-            
+
             return ret;
         }
-        
+
         function __write__(string s)
         {
             string news;
-            
+
             if(.pos == String.length(.s)) {
                 .s += s;
                 .pos = String.length(.s);
@@ -746,13 +757,13 @@ namespace Stream
             }
             return String.length(s);
         }
-        
+
         function __close__()
         {
             .s = "";
             .pos = 0;
         }
-        
+
         /**
          * @function eos
          * @declaration function eos()
@@ -761,11 +772,11 @@ namespace Stream
          */
         function eos()
         {
-            if(.pos == String.length(.s) and super.eos() ) 
+            if(.pos == String.length(.s) and super.eos() )
                 return true;
             return false;
         }
-        
+
         /**
          * @function truncate
          * @declaration function truncate(number length)
@@ -783,7 +794,7 @@ namespace Stream
             super.clearInputBuffer();
             return true;
         }
-        
+
         /**
             * @function seek
          * @declaration function seek(number offset, number whence)
@@ -804,7 +815,7 @@ namespace Stream
         function seek(number offset, number whence)
         {
             number newpos;
-            
+
             switch(whence) {
                 case Stream.SEEK_SET:
                     newpos = offset;
@@ -818,16 +829,16 @@ namespace Stream
                 default:
                     return false;
             }
-            
+
             if(newpos > String.length(.s)) .pos = String.length(.s);
             else if(newpos < 0) .pos = 0;
             else .pos = newpos;
-            
+
             super.clearInputBuffer();
-            
+
             return true;
         }
-        
+
         /**
          * @function length
          * @declaration function length()
@@ -838,7 +849,7 @@ namespace Stream
         {
             return(String.length(.s));
         }
-        
+
         /**
             * @function pos
          * @declaration function pos()
@@ -849,7 +860,7 @@ namespace Stream
         {
             return(.pos);
         }
-        
+
         /**
             * @function toString
          * @declaration function toString()
