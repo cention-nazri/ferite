@@ -23,6 +23,7 @@ test/*ferite
 tools/doc/feritedoc
 tools/farm/farm
 tools/generate-module/generate-module
+tools/generate-module/skel/Makefile.in
 tools/manual-builder/manual-builder-html
 tools/manual-builder/manual-builder-pdf
 modules/array/array_*.[ch]
