@@ -261,6 +261,8 @@ line of special matching code can be summarised within a one line regular expres
 */
 class Regexp {
 
+	static array expressions;
+
 	/**
 	 * @function match
 	 * @static
@@ -271,9 +273,15 @@ class Regexp {
 	 * @return A match object, or null otherwise
 	 */
 	static function match( string regexp, string container ) {
-		object o = new Regexp( regexp );
-		object match = o.match(container);
-		return match;
+		object o;
+		if (.expressions[regexp]) {
+			o = .expressions[regexp];
+		}
+		else {
+			o = new Regexp( regexp );
+			.expressions[regexp] = o;
+		}
+		return o.match(container);
 	}
 	/**
 	*  @function matchAll
@@ -285,7 +293,14 @@ class Regexp {
 	 * @return An array of match objects
 	 */
 	static function matchAll( string regexp, string container ) {
-		object o = new Regexp( regexp );
+		object o;
+		if (.expressions[regexp]) {
+			o = .expressions[regexp];
+		}
+		else {
+			o = new Regexp( regexp );
+			.expressions[regexp] = o;
+		}
 		return o.matchAll(container);
 	}
 	/**
@@ -299,7 +314,14 @@ class Regexp {
 	 * @return The string container with all matches swap with replacement
 	 */
 	static function replace( string regexp, string container, string replacement ) {
-		object o = new Regexp( regexp );
+		object o;
+		if (.expressions[regexp]) {
+			o = .expressions[regexp];
+		}
+		else {
+			o = new Regexp( regexp );
+			.expressions[regexp] = o;
+		}
 		return o.replace(container,replacement);
 	}
 	/**
@@ -313,7 +335,14 @@ class Regexp {
 	 * @return The string container with all matches swap with replacement
 	 */
 	static function replaceAll( string regexp, string container, string replacement ) {
-		object o = new Regexp( regexp );
+		object o;
+		if (.expressions[regexp]) {
+			o = .expressions[regexp];
+		}
+		else {
+			o = new Regexp( regexp );
+			.expressions[regexp] = o;
+		}
 		return o.replaceAll(container,replacement);
 	}
 
