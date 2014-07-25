@@ -54,3 +54,4 @@ config.sub
 depcomp
 install-sh
 missing
+configure.ac
