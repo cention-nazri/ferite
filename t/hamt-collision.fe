@@ -1,0 +1,13 @@
+/*
+ key                         uint64 hash           uint32 hash
+ Workflow.teleconference_    3305597995854170314   153192650
+ Workflow.confronted_        3657324421185636554   153192650
+
+ The colliding uint32 hash triggers the hamt collision bug - CPU pegged
+ at 100% while RAM usage goes up until killed by OOM killer.
+
+ */
+namespace Workflow {
+        function teleconference() {}
+        function confronted() {}
+}

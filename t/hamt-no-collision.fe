@@ -1,0 +1,4 @@
+namespace Workflow {
+        function ateleconference() {}
+        function confronted() {}
+}
