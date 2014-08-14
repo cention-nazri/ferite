@@ -274,12 +274,13 @@ class Regexp {
 	 */
 	static function match( string regexp, string container ) {
 		object o;
-		if (.expressions[regexp]) {
+		if( .expressions.keyExists(regexp) ) {
 			o = .expressions[regexp];
 		}
 		else {
 			o = new Regexp( regexp );
-			.expressions[regexp] = o;
+			if( regexp != "" and regexp != "\0" )
+				.expressions[regexp] = o;
 		}
 		return o.match(container);
 	}
@@ -294,12 +295,13 @@ class Regexp {
 	 */
 	static function matchAll( string regexp, string container ) {
 		object o;
-		if (.expressions[regexp]) {
+		if( .expressions.keyExists(regexp) ) {
 			o = .expressions[regexp];
 		}
 		else {
 			o = new Regexp( regexp );
-			.expressions[regexp] = o;
+			if( regexp != "" and regexp != "\0" )
+				.expressions[regexp] = o;
 		}
 		return o.matchAll(container);
 	}
@@ -315,12 +317,13 @@ class Regexp {
 	 */
 	static function replace( string regexp, string container, string replacement ) {
 		object o;
-		if (.expressions[regexp]) {
+		if(  .expressions.keyEixsts(regexp) ) {
 			o = .expressions[regexp];
 		}
 		else {
 			o = new Regexp( regexp );
-			.expressions[regexp] = o;
+			if( regexp != "" and regexp != "\0" )
+				.expressions[regexp] = o;
 		}
 		return o.replace(container,replacement);
 	}
@@ -336,12 +339,13 @@ class Regexp {
 	 */
 	static function replaceAll( string regexp, string container, string replacement ) {
 		object o;
-		if (.expressions[regexp]) {
+		if( .expressions.keyExists(regexp) ) {
 			o = .expressions[regexp];
 		}
 		else {
 			o = new Regexp( regexp );
-			.expressions[regexp] = o;
+			if( regexp != "" and regexp != "\0" )
+				.expressions[regexp] = o;
 		}
 		return o.replaceAll(container,replacement);
 	}
