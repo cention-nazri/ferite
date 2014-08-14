@@ -317,7 +317,7 @@ class Regexp {
 	 */
 	static function replace( string regexp, string container, string replacement ) {
 		object o;
-		if(  .expressions.keyEixsts(regexp) ) {
+		if(  .expressions.keyExists(regexp) ) {
 			o = .expressions[regexp];
 		}
 		else {
