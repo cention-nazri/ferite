@@ -15,7 +15,7 @@ namespace Linux {
 			if( flags.index('-fPIC') == -1  )
 				flags += " -fPIC";
 				
-			if( Farm.invokeExternalProgram( "gcc $flags -o $objectPath -c $file" ) )
+			if( Farm.invokeExternalProgram( "gcc -o $objectPath -c $file $flags" ) )
 				return objectPath;
 			return "";   
 		}
@@ -38,7 +38,7 @@ namespace Linux {
 			if( flags.index('-fPIC') == -1  )
 				flags += " -fPIC";
 			
-			if( Farm.invokeExternalProgram( "g++ $flags -fPIC -o $objectPath -c $file" ) )
+			if( Farm.invokeExternalProgram( "g++ -fPIC -o $objectPath -c $file $flags" ) )
 				return objectPath;
 			return "";   
 		}
@@ -62,7 +62,7 @@ namespace Linux {
 		function combine( object target, array files ) {
 			string objects = Array.join( files, " " );
 		string flags = target.getProperty('LD');
-			if( Farm.invokeExternalProgram( "gcc -shared -o ${.combinationName(target)} $flags $objects" ) )
+			if( Farm.invokeExternalProgram( "gcc -shared -o ${.combinationName(target)} $objects $flags" ) )
 				return true;
 			return false;
 		}		
@@ -94,7 +94,7 @@ namespace Linux {
 		function combine( object target, array files ) {
 			string objects = Array.join( files, " " );
 			string flags = target.getProperty( 'LD' );
-			return Farm.invokeExternalProgram( "gcc -o ${.combinationName(target)} $flags $objects" );
+			return Farm.invokeExternalProgram( "gcc -o ${.combinationName(target)} $objects $flags" );
 		}
 	}
 }
