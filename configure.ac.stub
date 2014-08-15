@@ -2,6 +2,7 @@ dnl Process this file with autoconf to create configure.
 
 AC_INIT
 AC_CONFIG_SRCDIR([src/ferite.c])
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE(ferite, 1.1.18)
 AM_CONFIG_HEADER(config.h)
 
@@ -290,31 +291,7 @@ AC_CONFIG_FILES([ferite-config \
  tools/manual-builder/manual-builder-html \
  tools/manual-builder/manual-builder-pdf \
  modules/Makefile \
- modules/array/Makefile \
-modules/console/Makefile \
-modules/date/Makefile \
-modules/filesystem/Makefile \
-modules/ipc/Makefile \
-modules/math/Makefile \
-modules/network/Makefile \
-modules/number/Makefile \
-modules/posix/Makefile \
-modules/reflection/Makefile \
-modules/regexp/Makefile \
-modules/rmi/Makefile \
-modules/rmi/rmi/Makefile \
-modules/rmi/rmi/protocol/Makefile \
-modules/rmi/rmi/translation/Makefile \
-modules/rmi/rmi/transport/Makefile \
-modules/serialize/Makefile \
-modules/stream/Makefile \
-modules/string/Makefile \
-modules/sys/Makefile \
-modules/test/Makefile \
-modules/thread/Makefile \
-modules/unix/Makefile \
-modules/xml/Makefile \
-])
+ %modules%])
 
 AC_CONFIG_COMMANDS([default],[[
  chmod +x ferite-config
