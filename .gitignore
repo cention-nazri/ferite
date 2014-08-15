@@ -56,3 +56,4 @@ install-sh
 missing
 configure.ac
 modules-config.m4
+m4
