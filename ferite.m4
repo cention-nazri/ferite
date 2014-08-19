@@ -50,19 +50,25 @@ dnl    done
 		FE_NATIVE_LIBRARY_PATH=`$FERITE_CONFIG --native-library-path`
 
 		ferite_config_major_version=`$FERITE_CONFIG --version | \
-	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\).*/\1/'`
 	        ferite_config_minor_version=`$FERITE_CONFIG --version | \
-	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\).*/\2/'`
 	        ferite_config_micro_version=`$FERITE_CONFIG --version | \
-	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\).*/\3/'`
+		ferite_config_release_version=`$FERITE_CONFIG --version |
+		    sed -e 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)//' \
+			-e 's/-//'`
 
 		# Later we should do actual tests on the library
 		ferite_req_major_version=`echo $min_ferite_version | \
-	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\).*/\1/'`
 	        ferite_req_minor_version=`echo $min_ferite_version | \
-	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\).*/\2/'`
 	        ferite_req_micro_version=`echo $min_ferite_version | \
-	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+	            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\).*/\3/'`
+	        ferite_req_release_version=`echo $min_ferite_version | \
+		    sed -e 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)//' \
+			-e 's/-//'`
 
 		if test $ferite_req_major_version -lt $ferite_config_major_version; then
 	            have_ferite="yes"
@@ -71,8 +77,20 @@ dnl    done
 	            have_ferite="yes"
 		elif test $ferite_req_major_version -eq $ferite_config_major_version && \
 	                test $ferite_req_minor_version -eq $ferite_config_minor_version && \
-	                test $ferite_req_micro_version -le $ferite_config_micro_version; then
-	            have_ferite="yes"
+	                test $ferite_req_micro_version -lt $ferite_config_micro_version; then
+		    have_ferite="yes"
+		elif test $ferite_req_major_version -eq $ferite_config_major_version && \
+	                test $ferite_req_minor_version -eq $ferite_config_minor_version && \
+	                test $ferite_req_micro_version -eq $ferite_config_micro_version; then
+		    if test -n "$ferite_req_release_version"; then
+			    if test -n "$ferite_config_release_version"; then
+				    if test $ferite_req_release_version -le $ferite_config_release_version; then
+					    have_ferite="yes"
+				    fi
+			    fi
+		    else
+			    have_ferite="yes"
+		    fi
 		fi
     fi
 
